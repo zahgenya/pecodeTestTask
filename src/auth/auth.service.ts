@@ -1,32 +1,47 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from 'src/user/user.service';
-import * as bcrypt from 'bcrypt'
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    private userService: UserService,
-  ){}
+    private userService: UserService
+  ) {}
 
-  async validate(username: string, password: string): Promise<any> {
-    const user = await this.userService.getUser(username)
-    if (!user) return null
-    const passwordValid = await bcrypt.compare(password, user.passwordHash)
+  async validate(identifier: string, password: string): Promise<any> {
+    let user;
+
+    if (this.isEmail(identifier)) {
+      user = await this.userService.findByEmail(identifier);
+    } else {
+      user = await this.userService.getUser(identifier);
+    }
+
     if (!user) {
-      throw new NotAcceptableException('could not find user')
+      throw new UnauthorizedException('User not found');
     }
-    if (user && passwordValid) {
-      return user
+
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid password');
     }
-    return null
+
+    const { passwordHash, ...result } = user;
+    return result;
+  }
+
+  private isEmail(identifier: string): boolean {
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    return emailRegex.test(identifier);
   }
 
   async login(user: any) {
-    const payload = { username: user.username, sub: user.id }
+    const payload = { username: user.username, sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload)
-    }
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }
