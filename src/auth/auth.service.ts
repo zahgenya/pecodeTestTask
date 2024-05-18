@@ -16,7 +16,7 @@ export class AuthService {
     if (this.isEmail(identifier)) {
       user = await this.userService.findByEmail(identifier);
     } else {
-      user = await this.userService.getUser(identifier);
+      user = await this.userService.getUserByName(identifier);
     }
 
     if (!user) {
