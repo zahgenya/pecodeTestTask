@@ -54,3 +54,8 @@ pids
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+data-source.config.ts
+migration.config.ts
+ormconfig.ts
+typeOrm.config.ts
