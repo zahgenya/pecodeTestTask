@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserPost } from './userPost.entity';
 import { Repository } from 'typeorm';
@@ -12,14 +12,24 @@ export class UserPostService {
   ) {}
 
   async createPost(body: createUserPostDto, user: User): Promise<UserPost> {
-    const newUserPost = this.userPostRepository.create({
-      ...body,
-      user,
-    });
-    return this.userPostRepository.save(newUserPost);
+    try {
+      const newUserPost = this.userPostRepository.create({
+        ...body,
+        user,
+      });
+
+      if (!newUserPost) {
+        throw new HttpException('Failed to create post', HttpStatus.BAD_REQUEST)
+      }
+
+      return await this.userPostRepository.save(newUserPost);
+    } catch (err) {
+      throw new HttpException(err.message || 'An error has occured', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 
   async findAll(limit?: number) {
+    try {
     let queryBuilder = this.userPostRepository.createQueryBuilder('userPost');
     queryBuilder = queryBuilder
       .leftJoinAndSelect('userPost.user', 'user')
@@ -30,5 +40,8 @@ export class UserPostService {
     }
 
     return await queryBuilder.getMany();
+    } catch (err) {
+      throw new HttpException(err.message || 'An error has occured', HttpStatus.INTERNAL_SERVER_ERROR)
+    }
   }
 }

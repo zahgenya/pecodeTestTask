@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         throw new UnauthorizedException();
       }
       return user;
-    } catch (error) {
+    } catch (err) {
       throw new UnauthorizedException();
     }
   }

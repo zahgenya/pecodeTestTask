@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   Post,
   Query,
   Request,
@@ -28,6 +30,10 @@ export class UserPostController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async getPosts(@Query('limit') limit: number): Promise<UserPost[]> {
+    if (limit && isNaN(limit)) {
+      throw new HttpException('Limit param should be a number', HttpStatus.BAD_REQUEST)
+    }
+
     return this.userPostService.findAll(limit);
   }
 }
