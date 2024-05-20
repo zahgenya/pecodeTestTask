@@ -1,7 +1,3 @@
-Sure, I'll correct the typos and enhance the overall clarity and readability of your README section:
-
----
-
 # Facebook Like API
 
 This API provides functionalities similar to Facebook's. The available endpoints are:
@@ -18,9 +14,3 @@ This API provides functionalities similar to Facebook's. The available endpoints
 - **GET /users**: Retrieves all users.
 - **GET /users/:id**: Retrieves a user by their ID.
 - **GET /me**: Retrieves the current user's information based on `req.user`.
-
-This API allows for basic user interactions, including creating and retrieving posts, as well as accessing user information.
-
----
-
-Feel free to ask if you need any further assistance!
